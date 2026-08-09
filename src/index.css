@@ -1,0 +1,561 @@
+/* ==========================================================================
+   Goodluck Tech Service — Compact Mobile-First Design System
+   ========================================================================== */
+
+:root {
+  --primary-navy: #0B132B;
+  --primary-navy-hover: #1C2541;
+  --accent-green: #00D66C;
+  --accent-green-dark: #00B359;
+  --whatsapp-green: #25D366;
+  --whatsapp-dark: #128C7E;
+  --accent-blue: #0284C7;
+  --accent-gold: #F59E0B;
+  
+  --bg-main: #F4F6F9;
+  --bg-card: #FFFFFF;
+  --bg-secondary: #EBF0F5;
+  
+  --text-main: #0B132B;
+  --text-muted: #64748B;
+  --text-light: #94A3B8;
+  --text-white: #FFFFFF;
+  
+  --border-light: #E2E8F0;
+  --border-focus: #00D66C;
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  --shadow-sm: 0 1px 4px rgba(11, 19, 43, 0.05);
+  --shadow-md: 0 4px 14px rgba(11, 19, 43, 0.08);
+  --shadow-lg: 0 10px 30px rgba(11, 19, 43, 0.12);
+
+  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --bottom-nav-height: 60px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.45;
+  padding-bottom: calc(var(--bottom-nav-height) + 16px);
+  min-height: 100vh;
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding-bottom: 0;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Layout Utilities */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 1.25rem;
+  }
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  min-height: 42px;
+  text-align: center;
+  font-size: 0.88rem;
+}
+
+.btn-primary {
+  background-color: var(--primary-navy);
+  color: var(--text-white);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-navy-hover);
+}
+
+.btn-accent {
+  background-color: var(--accent-green);
+  color: #0B132B;
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-green-dark);
+  color: white;
+}
+
+.btn-whatsapp {
+  background-color: var(--whatsapp-green);
+  color: #000000;
+  font-weight: 800;
+}
+
+.btn-whatsapp:hover {
+  background-color: #20BD5A;
+}
+
+.btn-outline {
+  border: 1.5px solid var(--border-light);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+.btn-outline:hover {
+  border-color: var(--primary-navy);
+  background-color: var(--bg-secondary);
+}
+
+.btn-sm {
+  min-height: 32px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Badge System */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge-brand-new {
+  background-color: #DCFCE7;
+  color: #15803D;
+}
+
+.badge-uk-used {
+  background-color: #E0F2FE;
+  color: #0369A1;
+}
+
+.badge-in-stock {
+  background-color: #ECFDF5;
+  color: #047857;
+}
+
+.badge-out-stock {
+  background-color: #FEE2E2;
+  color: #DC2626;
+}
+
+.badge-featured {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+
+/* Cards */
+.card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 99;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.06);
+}
+
+@media (min-width: 1024px) {
+  .mobile-bottom-nav,
+  .mobile-subnav-bar {
+    display: none !important;
+  }
+}
+
+.nav-item-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex: 1;
+  height: 100%;
+  position: relative;
+}
+
+.nav-item-mobile.active {
+  color: #059669;
+}
+
+.cart-badge-count {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 16px);
+  background-color: var(--accent-green);
+  color: #0B132B;
+  font-size: 0.62rem;
+  font-weight: 800;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Floating WhatsApp Button */
+.whatsapp-float {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + 12px);
+  right: 12px;
+  background-color: var(--whatsapp-green);
+  color: #000000;
+  border-radius: var(--radius-full);
+  padding: 0.6rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 800;
+  font-size: 0.82rem;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+  z-index: 98;
+  transition: transform 0.2s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.04);
+}
+
+@media (min-width: 1024px) {
+  .whatsapp-float {
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+/* Header & Top Navbar */
+.top-header {
+  background-color: var(--primary-navy);
+  color: var(--text-white);
+  padding: 0.4rem 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.header-nav {
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary-navy);
+}
+
+.brand-logo span.accent {
+  color: #059669;
+}
+
+.desktop-menu {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .desktop-menu {
+    display: flex;
+  }
+}
+
+.desktop-menu a {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.desktop-menu a:hover,
+.desktop-menu a.active {
+  color: #059669;
+}
+
+/* Hero Section (Compact Mobile View) */
+.hero-section {
+  background: linear-gradient(135deg, #0B132B 0%, #1C2541 100%);
+  color: white;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .hero-section {
+    padding: 2rem 0;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+.hero-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 0.4rem;
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+}
+
+.hero-subtitle {
+  color: #94A3B8;
+  font-size: 0.82rem;
+  margin-bottom: 0.85rem;
+  line-height: 1.4;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.hero-image-col {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .hero-image-col {
+    display: block;
+  }
+}
+
+/* Product Grid (Compact 2-Columns on Mobile) */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-size: 0.88rem;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(0, 214, 108, 0.15);
+}
+
+/* Modal & Drawer Overlays */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 19, 43, 0.65);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.drawer-content {
+  background-color: var(--bg-card);
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  animation: slideLeft 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--primary-navy);
+  margin-bottom: 0.2rem;
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Photo Carousel */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background-color: #F8FAFC;
+}
+
+.carousel-slide {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .carousel-slide {
+    height: 400px;
+  }
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.85);
+  color: var(--primary-navy);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 5;
+}
+
+.carousel-btn.prev {
+  left: 8px;
+}
+
+.carousel-btn.next {
+  right: 8px;
+}
