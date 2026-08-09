@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { LayoutDashboard, Smartphone, ShoppingBag, Wrench, RefreshCw, Settings as SettingsIcon, Plus, Edit, Trash2, CheckCircle, Clock, Eye, X, Save, Upload, Headphones, Image as ImageIcon } from 'lucide-react';
+import { LayoutDashboard, Smartphone, ShoppingBag, Wrench, RefreshCw, Settings as SettingsIcon, Plus, Edit, Trash2, CheckCircle, Clock, Eye, EyeOff, X, Save, Upload, Headphones, Image as ImageIcon, Lock, LogOut, ShieldCheck } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 
 export default function Admin() {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('gl_admin_session') === 'active';
+  });
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [loggingIn, setLoggingIn] = useState(false);
+
+  // Dashboard Tabs State
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState({});
   const [products, setProducts] = useState([]);
@@ -49,6 +60,7 @@ export default function Admin() {
   ]);
 
   const loadData = async () => {
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
       const [statsRes, prodRes, accRes, ordRes, repRes, swapRes, setRes, brandRes] = await Promise.all([
@@ -78,8 +90,54 @@ export default function Admin() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (isAuthenticated) {
+      loadData();
+    }
+  }, [isAuthenticated]);
+
+  // Admin Login Handler
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoggingIn(true);
+
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        localStorage.setItem('gl_admin_session', 'active');
+        setIsAuthenticated(true);
+      } else {
+        // Fallback local check if server endpoint is offline
+        if (loginEmail.trim().toLowerCase() === 'goodlucktech16@gmail.com' && loginPassword === 'GGodluck1990') {
+          localStorage.setItem('gl_admin_session', 'active');
+          setIsAuthenticated(true);
+        } else {
+          setLoginError(data.error || 'Invalid admin email or password');
+        }
+      }
+    } catch (err) {
+      // Local check fallback
+      if (loginEmail.trim().toLowerCase() === 'goodlucktech16@gmail.com' && loginPassword === 'GGodluck1990') {
+        localStorage.setItem('gl_admin_session', 'active');
+        setIsAuthenticated(true);
+      } else {
+        setLoginError('Invalid email or password. Please try again.');
+      }
+    } finally {
+      setLoggingIn(false);
+    }
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('gl_admin_session');
+    setIsAuthenticated(false);
+  };
 
   const formatNaira = (amt) => '₦' + Number(amt).toLocaleString();
 
@@ -280,6 +338,131 @@ export default function Admin() {
     setProdVariations(updated);
   };
 
+  // -------------------------------------------------------------
+  // RENDER ADMIN LOGIN SCREEN IF NOT AUTHENTICATED
+  // -------------------------------------------------------------
+  if (!isAuthenticated) {
+    return (
+      <>
+        <SEOHead title="Admin Security Login — Goodluck Tech Service" />
+
+        <div style={{
+          minHeight: '82vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1.5rem 1rem',
+          backgroundColor: 'var(--bg-main)'
+        }}>
+          <div className="card" style={{
+            width: '100%',
+            maxWidth: '440px',
+            padding: '2rem 1.5rem',
+            backgroundColor: 'white',
+            boxShadow: '0 10px 30px rgba(11, 19, 43, 0.12)',
+            borderRadius: 'var(--radius-lg)'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{
+                width: '54px',
+                height: '54px',
+                backgroundColor: 'var(--primary-navy)',
+                color: 'var(--accent-green)',
+                borderRadius: '50%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '0.75rem'
+              }}>
+                <Lock size={26} />
+              </div>
+              <h1 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-navy)', marginBottom: '0.2rem' }}>
+                Admin Portal Login
+              </h1>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                Goodluck Tech Service Store Management
+              </p>
+            </div>
+
+            {loginError && (
+              <div style={{
+                backgroundColor: '#FEF2F2',
+                border: '1px solid #FCA5A5',
+                color: '#991B1B',
+                padding: '0.65rem',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.82rem',
+                marginBottom: '1rem',
+                textAlign: 'center',
+                fontWeight: '700'
+              }}>
+                ⚠️ {loginError}
+              </div>
+            )}
+
+            <form onSubmit={handleAdminLogin}>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label className="form-label">Admin Email Address *</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  placeholder="goodlucktech16@gmail.com"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                <label className="form-label">Admin Password *</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className="form-input"
+                    placeholder="Enter password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    required
+                    style={{ paddingRight: '2.5rem' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: 'var(--text-muted)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-accent btn-full"
+                style={{ padding: '0.85rem', fontSize: '0.95rem', fontWeight: '800' }}
+                disabled={loggingIn}
+              >
+                <ShieldCheck size={18} />
+                <span>{loggingIn ? 'Authenticating...' : 'Log In to Admin Dashboard'}</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // -------------------------------------------------------------
+  // AUTHENTICATED ADMIN DASHBOARD VIEW
+  // -------------------------------------------------------------
   return (
     <>
       <SEOHead title="Admin Dashboard — Goodluck Tech Service" />
@@ -288,13 +471,13 @@ export default function Admin() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <span className="badge badge-brand-new" style={{ marginBottom: '0.25rem' }}>Full Store Management</span>
+            <span className="badge badge-brand-new" style={{ marginBottom: '0.25rem' }}>Authenticated Admin</span>
             <h1 className="section-title" style={{ fontSize: '1.6rem' }}>Admin Control Center</h1>
             <p className="section-subtitle" style={{ marginBottom: 0 }}>
               Goodluck Tech Service — UPTH 18 Everyday Plaza, Choba, Port Harcourt
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <button
               onClick={() => { resetProductForm(); setShowProductModal(true); }}
               className="btn btn-accent btn-sm"
@@ -308,6 +491,14 @@ export default function Admin() {
               style={{ padding: '0.5rem 0.85rem' }}
             >
               <Plus size={16} /> Add Accessory
+            </button>
+            <button
+              onClick={handleAdminLogout}
+              className="btn btn-sm"
+              style={{ padding: '0.5rem 0.75rem', backgroundColor: '#FEF2F2', color: '#991B1B', border: '1px solid #FCA5A5' }}
+              title="Log Out"
+            >
+              <LogOut size={15} /> Log Out
             </button>
           </div>
         </div>

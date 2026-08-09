@@ -44,6 +44,31 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 });
 
 // -------------------------------------------------------------
+// ADMIN AUTHENTICATION API
+// -------------------------------------------------------------
+app.post('/api/admin/login', (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+
+  const validEmail = 'goodlucktech16@gmail.com';
+  const validPassword = 'GGodluck1990';
+
+  if (email.trim().toLowerCase() === validEmail.toLowerCase() && password === validPassword) {
+    const token = 'gl-admin-token-' + Date.now();
+    return res.json({
+      success: true,
+      message: 'Admin authentication successful',
+      token,
+      user: { email: validEmail, role: 'admin' }
+    });
+  } else {
+    return res.status(401).json({ error: 'Invalid admin email or password' });
+  }
+});
+
+// -------------------------------------------------------------
 // SETTINGS & STATS
 // -------------------------------------------------------------
 app.get('/api/settings', (req, res) => {
