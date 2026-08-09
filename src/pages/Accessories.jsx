@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ShoppingCart, Plus, Headphones, Zap, BatteryCharging, Shield, Smartphone, Cable, Watch, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, Plus, Headphones, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import SEOHead from '../components/SEOHead';
 
 export default function Accessories() {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [accessories, setAccessories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(true);
@@ -38,6 +40,15 @@ export default function Accessories() {
   }, [selectedCategory]);
 
   const formatNaira = (amt) => '₦' + Number(amt).toLocaleString();
+
+  const handleCardClick = (accId) => {
+    navigate(`/accessory/${accId}`);
+  };
+
+  const handleQuickAdd = (e, acc) => {
+    e.stopPropagation();
+    addToCart({ id: `acc-${acc.id}`, title: acc.title, base_price: acc.price, image_url: acc.image_url }, null);
+  };
 
   return (
     <>
@@ -110,7 +121,19 @@ export default function Accessories() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)', gap: '0.65rem' }}>
             {accessories.map((acc) => (
-              <div key={acc.id} className="card" style={{ padding: '0.65rem', display: 'flex', flexDirection: 'column', backgroundColor: 'white' }}>
+              <div
+                key={acc.id}
+                onClick={() => handleCardClick(acc.id)}
+                className="card"
+                style={{
+                  padding: '0.65rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  backgroundColor: 'white',
+                  cursor: 'pointer',
+                  position: 'relative'
+                }}
+              >
                 <img
                   src={acc.image_url || 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=400&auto=format&fit=crop&q=80'}
                   alt={acc.title}
@@ -125,15 +148,30 @@ export default function Accessories() {
                 <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.3 }}>
                   {acc.description}
                 </p>
-                <div style={{ marginTop: 'auto', paddingTop: '0.35rem', borderTop: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.92rem', fontWeight: '800', color: 'var(--primary-navy)' }}>{formatNaira(acc.price)}</span>
-                  <button
-                    onClick={() => addToCart({ id: `acc-${acc.id}`, title: acc.title, base_price: acc.price, image_url: acc.image_url }, null)}
-                    className="btn btn-accent btn-sm"
-                    style={{ fontSize: '0.72rem', padding: '0.25rem 0.5rem' }}
-                  >
-                    <Plus size={13} /> Add
-                  </button>
+
+                <div style={{ marginTop: 'auto', paddingTop: '0.35rem', borderTop: '1px solid var(--border-light)' }}>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '800', color: 'var(--primary-navy)', marginBottom: '0.3rem' }}>
+                    {formatNaira(acc.price)}
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.35rem' }}>
+                    <button
+                      onClick={() => handleCardClick(acc.id)}
+                      className="btn btn-primary btn-sm"
+                      style={{ fontSize: '0.72rem', padding: '0.25rem 0.4rem' }}
+                    >
+                      <span>View Specs</span>
+                      <ArrowRight size={11} />
+                    </button>
+                    <button
+                      onClick={(e) => handleQuickAdd(e, acc)}
+                      className="btn btn-accent btn-sm"
+                      style={{ fontSize: '0.72rem', padding: '0.25rem 0.45rem' }}
+                      title="Add to cart"
+                    >
+                      <Plus size={13} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
