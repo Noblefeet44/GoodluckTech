@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Plus, Headphones, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import SEOHead from '../components/SEOHead';
+import { safeFetchJson, fallbackAccessories } from '../data/fallbackData';
 
 export default function Accessories() {
   const { addToCart } = useCart();
@@ -28,10 +29,14 @@ export default function Accessories() {
       setLoading(true);
       try {
         const query = selectedCategory !== 'All' ? `?category=${encodeURIComponent(selectedCategory)}` : '';
-        const res = await fetch(`/api/accessories${query}`);
-        setAccessories(await res.json());
+        let data = await safeFetchJson(`/api/accessories${query}`, fallbackAccessories);
+        if (selectedCategory !== 'All') {
+          data = data.filter(a => a.category.toLowerCase() === selectedCategory.toLowerCase());
+        }
+        setAccessories(data);
       } catch (err) {
         console.error(err);
+        setAccessories(fallbackAccessories);
       } finally {
         setLoading(false);
       }

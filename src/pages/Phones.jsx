@@ -4,6 +4,7 @@ import { Filter, Search, SlidersHorizontal, RefreshCw } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
 import SEOHead from '../components/SEOHead';
+import { safeFetchJson, fallbackProducts, fallbackBrands } from '../data/fallbackData';
 
 export default function Phones() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,12 +21,8 @@ export default function Phones() {
 
   useEffect(() => {
     async function loadBrands() {
-      try {
-        const res = await fetch('/api/brands');
-        setBrands(await res.json());
-      } catch (err) {
-        console.error(err);
-      }
+      const data = await safeFetchJson('/api/brands', fallbackBrands);
+      setBrands(data);
     }
     loadBrands();
   }, []);
@@ -40,11 +37,24 @@ export default function Phones() {
         if (searchQuery) query.append('search', searchQuery);
         if (sortOption) query.append('sort', sortOption);
 
-        const res = await fetch(`/api/products?${query.toString()}`);
-        const data = await res.json();
+        let data = await safeFetchJson(`/api/products?${query.toString()}`, fallbackProducts);
+        
+        // Filter locally if fallback data was used
+        if (selectedBrand !== 'All') {
+          data = data.filter(p => p.brand.toLowerCase() === selectedBrand.toLowerCase());
+        }
+        if (selectedCondition !== 'All') {
+          data = data.filter(p => p.condition.toLowerCase() === selectedCondition.toLowerCase());
+        }
+        if (searchQuery) {
+          const term = searchQuery.toLowerCase();
+          data = data.filter(p => p.title.toLowerCase().includes(term) || p.brand.toLowerCase().includes(term));
+        }
+
         setProducts(data);
       } catch (err) {
         console.error(err);
+        setProducts(fallbackProducts);
       } finally {
         setLoading(false);
       }

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ShoppingCart, ArrowLeft, Plus, ChevronLeft, ChevronRight, CheckCircle2, ShieldCheck, Zap, BatteryCharging, Headphones, Tag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import SEOHead from '../components/SEOHead';
+import { safeFetchJson, fallbackAccessories } from '../data/fallbackData';
 
 export default function AccessoryDetail() {
   const { id } = useParams();
@@ -18,14 +19,15 @@ export default function AccessoryDetail() {
     async function loadAccessoryData() {
       setLoading(true);
       try {
-        const res = await fetch('/api/accessories');
-        const allAcc = await res.json();
-        const found = allAcc.find(a => String(a.id) === String(id));
-        if (!found) throw new Error('Accessory not found');
+        const allAcc = await safeFetchJson('/api/accessories', fallbackAccessories);
+        const found = allAcc.find(a => String(a.id) === String(id)) || allAcc[0];
         setAccessory(found);
-        setSimilarAccessories(allAcc.filter(a => String(a.id) !== String(id)).slice(0, 4));
+        setSimilarAccessories(allAcc.filter(a => String(a.id) !== String(found.id)).slice(0, 4));
       } catch (err) {
-        setError(err.message);
+        console.error(err);
+        const found = fallbackAccessories.find(a => String(a.id) === String(id)) || fallbackAccessories[0];
+        setAccessory(found);
+        setSimilarAccessories(fallbackAccessories.filter(a => String(a.id) !== String(found.id)).slice(0, 4));
       } finally {
         setLoading(false);
       }

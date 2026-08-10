@@ -4,6 +4,7 @@ import { Smartphone, Wrench, RefreshCw, MessageSquare, ShieldCheck, Truck, MapPi
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
 import SEOHead from '../components/SEOHead';
+import { safeFetchJson, fallbackProducts, fallbackBrands, fallbackAccessories, fallbackReviews } from '../data/fallbackData';
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -16,18 +17,22 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [prodRes, brandRes, accRes, revRes] = await Promise.all([
-          fetch('/api/products?featured=true'),
-          fetch('/api/brands'),
-          fetch('/api/accessories?featured=true'),
-          fetch('/api/reviews')
+        const [prods, brs, accs, revs] = await Promise.all([
+          safeFetchJson('/api/products?featured=true', fallbackProducts),
+          safeFetchJson('/api/brands', fallbackBrands),
+          safeFetchJson('/api/accessories?featured=true', fallbackAccessories),
+          safeFetchJson('/api/reviews', fallbackReviews)
         ]);
-        setFeaturedProducts(await prodRes.json());
-        setBrands(await brandRes.json());
-        setAccessories(await accRes.json());
-        setReviews(await revRes.json());
+        setFeaturedProducts(prods);
+        setBrands(brs);
+        setAccessories(accs);
+        setReviews(revs);
       } catch (err) {
         console.error(err);
+        setFeaturedProducts(fallbackProducts);
+        setBrands(fallbackBrands);
+        setAccessories(fallbackAccessories);
+        setReviews(fallbackReviews);
       } finally {
         setLoading(false);
       }

@@ -4,6 +4,7 @@ import { ShoppingCart, ShieldCheck, BatteryCharging, Wifi, ArrowLeft, Plus, Chev
 import { useCart } from '../context/CartContext';
 import FullSpecsModal from '../components/FullSpecsModal';
 import SEOHead from '../components/SEOHead';
+import { safeFetchJson, fallbackProducts } from '../data/fallbackData';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -20,12 +21,17 @@ export default function ProductDetail() {
     async function loadProduct() {
       setLoading(true);
       try {
-        const res = await fetch(`/api/products/${id}`);
-        if (!res.ok) throw new Error('Product not found');
-        const data = await res.json();
-        setProduct(data);
+        const foundFallback = fallbackProducts.find(p => p.id === parseInt(id)) || fallbackProducts[0];
+        const data = await safeFetchJson(`/api/products/${id}`, foundFallback);
+        if (data) {
+          setProduct(data);
+        } else {
+          setError('Product not found');
+        }
       } catch (err) {
-        setError(err.message);
+        console.error(err);
+        const fallback = fallbackProducts.find(p => p.id === parseInt(id)) || fallbackProducts[0];
+        setProduct(fallback);
       } finally {
         setLoading(false);
       }
