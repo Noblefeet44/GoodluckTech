@@ -52,8 +52,8 @@ app.post('/api/admin/login', (req, res) => {
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
-  const validEmail = 'goodlucktech16@gmail.com';
-  const validPassword = 'GGodluck1990';
+  const validEmail = process.env.ADMIN_EMAIL || 'goodlucktech16@gmail.com';
+  const validPassword = process.env.ADMIN_PASSWORD || 'GGodluck1990';
 
   if (email.trim().toLowerCase() === validEmail.toLowerCase() && password === validPassword) {
     const token = 'gl-admin-token-' + Date.now();

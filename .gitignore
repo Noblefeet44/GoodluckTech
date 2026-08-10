@@ -8,8 +8,16 @@ dist-ssr
 *.local
 
 # Environment variables
+.env
+.env.*
 .env.local
 .env.*.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+server/*.db
 
 # Logs
 npm-debug.log*
