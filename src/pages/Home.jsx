@@ -242,7 +242,7 @@ export default function Home() {
                 <span>Start Valuation & Swap</span>
               </Link>
               <a
-                href="https://wa.me/2347063334523?text=Hello%20Goodluck%20Tech%20Service!%20I%20want%20to%20sell%2Fswap%20my%20phone."
+                href="https://wa.me/2349012544042?text=Hello%20Goodluck%20Tech%20Service!%20I%20want%20to%20sell%2Fswap%20my%20phone."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-whatsapp btn-sm"
@@ -348,7 +348,7 @@ export default function Home() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                   <MessageSquare size={20} style={{ color: 'var(--whatsapp-green)', flexShrink: 0 }} />
                   <div>
-                    <strong style={{ color: 'var(--primary-navy)' }}>WhatsApp / Phone:</strong> 07063334523
+                    <strong style={{ color: 'var(--primary-navy)' }}>WhatsApp / Phone:</strong> 09012544042
                   </div>
                 </div>
               </div>

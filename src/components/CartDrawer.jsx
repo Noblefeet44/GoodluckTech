@@ -25,8 +25,8 @@ export default function CartDrawer() {
     }
 
     setIsSubmitting(true);
+    let orderCode = 'GL-ORD-' + Math.floor(1000 + Math.random() * 9000);
 
-    // Save order to server database
     try {
       const orderPayload = {
         customer_name: customerName,
@@ -45,53 +45,55 @@ export default function CartDrawer() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderPayload)
       });
-      const data = await res.json();
-
-      // Build formatted WhatsApp message
-      let message = `*NEW ORDER — GOODLUCK TECH SERVICE*\n`;
-      message += `-------------------------------\n`;
-      message += `*Order Ref:* ${data.order_code || 'GL-ORD'}\n`;
-      message += `*Customer:* ${customerName}\n`;
-      message += `*Phone/WhatsApp:* ${customerPhone}\n`;
-      message += `*Delivery Choice:* ${deliveryMethod}\n`;
-      if (deliveryMethod === 'Nationwide Delivery') {
-        message += `*Address:* ${address}, ${state}\n`;
-      } else {
-        message += `*Pickup Store:* UPTH 18, Everyday Plaza, Choba, Port Harcourt\n`;
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data.order_code) orderCode = data.order_code;
       }
-      message += `-------------------------------\n`;
-      message += `*ORDER ITEMS:*\n`;
-
-      cartItems.forEach((item, index) => {
-        message += `${index + 1}. *${item.title}*\n`;
-        if (item.storage || item.color) {
-          message += `   Specs: ${item.storage} | ${item.color}\n`;
-        }
-        message += `   Qty: ${item.quantity} x ${formatNaira(item.unitPrice)} = ${formatNaira(item.quantity * item.unitPrice)}\n\n`;
-      });
-
-      if (notes.trim()) {
-        message += `*Notes:* ${notes}\n`;
-      }
-
-      message += `-------------------------------\n`;
-      message += `*TOTAL AMOUNT: ${formatNaira(cartSubtotal)}*\n`;
-      message += `-------------------------------\n`;
-      message += `Hello Goodluck Tech Service, I would like to confirm my order!`;
-
-      const encodedMsg = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/2349012544042?text=${encodedMsg}`;
-
-      // Open WhatsApp & clear cart
-      window.open(whatsappUrl, '_blank');
-      clearCart();
-      closeCart();
     } catch (err) {
-      console.error(err);
-      alert('Network error submitting order, opening WhatsApp directly...');
-    } finally {
-      setIsSubmitting(false);
+      console.warn('Backend order sync skipped, opening WhatsApp directly:', err);
     }
+
+    // Build formatted WhatsApp message
+    let message = `*NEW ORDER — GOODLUCK TECH SERVICE*\n`;
+    message += `-------------------------------\n`;
+    message += `*Order Ref:* ${orderCode}\n`;
+    message += `*Customer:* ${customerName}\n`;
+    message += `*Phone/WhatsApp:* ${customerPhone}\n`;
+    message += `*Delivery Choice:* ${deliveryMethod}\n`;
+    if (deliveryMethod === 'Nationwide Delivery') {
+      message += `*Address:* ${address}, ${state}\n`;
+    } else {
+      message += `*Pickup Store:* UPTH 18, Everyday Plaza, Choba, Port Harcourt\n`;
+    }
+    message += `-------------------------------\n`;
+    message += `*ORDER ITEMS:*\n`;
+
+    cartItems.forEach((item, index) => {
+      message += `${index + 1}. *${item.title}*\n`;
+      if (item.storage || item.color) {
+        message += `   Specs: ${item.storage} | ${item.color}\n`;
+      }
+      message += `   Qty: ${item.quantity} x ${formatNaira(item.unitPrice)} = ${formatNaira(item.quantity * item.unitPrice)}\n\n`;
+    });
+
+    if (notes.trim()) {
+      message += `*Notes:* ${notes}\n`;
+    }
+
+    message += `-------------------------------\n`;
+    message += `*TOTAL AMOUNT: ${formatNaira(cartSubtotal)}*\n`;
+    message += `-------------------------------\n`;
+    message += `Hello Goodluck Tech Service, I would like to confirm my order!`;
+
+    const encodedMsg = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/2349012544042?text=${encodedMsg}`;
+
+    // Open WhatsApp & clear cart seamlessly
+    window.open(whatsappUrl, '_blank');
+    clearCart();
+    closeCart();
+    setIsSubmitting(false);
   };
 
   return (
@@ -291,7 +293,7 @@ export default function CartDrawer() {
               <span>Checkout via WhatsApp</span>
             </button>
             <p style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-              No online payment required. Your order opens on WhatsApp (07063334523).
+              No online payment required. Your order opens on WhatsApp (09012544042).
             </p>
           </div>
         )}

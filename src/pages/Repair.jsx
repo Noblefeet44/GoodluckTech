@@ -42,6 +42,8 @@ export default function Repair() {
 
     setIsSubmitting(true);
 
+    let refCode = 'GL-REP-' + Math.floor(1000 + Math.random() * 9000);
+
     try {
       const payload = {
         customer_name: customerName,
@@ -63,13 +65,34 @@ export default function Repair() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const data = await res.json();
-      setBookingCode(data.booking_code);
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data.booking_code) refCode = data.booking_code;
+      }
     } catch (err) {
-      console.error(err);
-      alert('Error booking repair, opening WhatsApp directly...');
+      console.warn('Backend repair sync skipped, opening WhatsApp directly:', err);
     } finally {
+      setBookingCode(refCode);
       setIsSubmitting(false);
+
+      // Open WhatsApp directly for the user
+      let msg = `*NEW PHONE REPAIR BOOKING*\n`;
+      msg += `-------------------------------\n`;
+      msg += `*Booking Ref:* ${refCode}\n`;
+      msg += `*Customer:* ${customerName}\n`;
+      msg += `*WhatsApp:* ${customerPhone}\n`;
+      msg += `*Location:* ${location}\n`;
+      msg += `-------------------------------\n`;
+      msg += `*DEVICE:* ${brand} ${model} (${storage})\n`;
+      msg += `*PROBLEM:* ${problemType}\n`;
+      if (problemDesc) msg += `*Description:* ${problemDesc}\n`;
+      msg += `*Preference:* ${repairPreference}\n`;
+      if (preferredDate) msg += `*Preferred Date:* ${preferredDate}\n`;
+      msg += `-------------------------------\n`;
+      msg += `Hello Goodluck Tech Service, I would like to confirm my repair appointment!`;
+
+      window.open(`https://wa.me/2349012544042?text=${encodeURIComponent(msg)}`, '_blank');
     }
   };
 

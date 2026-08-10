@@ -31,6 +31,8 @@ export default function SellSwap() {
 
     setIsSubmitting(true);
 
+    let refCode = 'GL-SWP-' + Math.floor(1000 + Math.random() * 9000);
+
     try {
       const payload = {
         request_type: requestType,
@@ -40,10 +42,10 @@ export default function SellSwap() {
         brand,
         model,
         storage,
-        ram,
+        ram: '',
         color,
         battery_health: batteryHealth,
-        condition_notes: `Screen: ${screenCondition} | Body: ${bodyCondition} | Face ID/Touch ID: ${faceIdStatus}`,
+        condition_notes: `Screen: ${screenCondition}, Body: ${bodyCondition}, Biometrics: ${faceIdStatus}`,
         faults,
         asking_price: askingPrice ? parseFloat(askingPrice) : 0,
         target_swap_phone: targetSwapPhone,
@@ -55,13 +57,40 @@ export default function SellSwap() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const data = await res.json();
-      setSubmittedCode(data.request_code);
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data.request_code) refCode = data.request_code;
+      }
     } catch (err) {
-      console.error(err);
-      alert('Error submitting request to server, opening WhatsApp directly...');
+      console.warn('Backend swap sync skipped, opening WhatsApp directly:', err);
     } finally {
+      setSubmittedCode(refCode);
       setIsSubmitting(false);
+
+      // Open WhatsApp directly for the user
+      let msg = `*NEW PHONE SELL/SWAP REQUEST*\n`;
+      msg += `-------------------------------\n`;
+      msg += `*Ref Code:* ${refCode}\n`;
+      msg += `*Goal:* ${requestType}\n`;
+      msg += `*Customer:* ${customerName}\n`;
+      msg += `*WhatsApp:* ${customerPhone}\n`;
+      msg += `*Location:* ${location}\n`;
+      msg += `-------------------------------\n`;
+      msg += `*PHONE DETAILS:*\n`;
+      msg += `• Brand & Model: ${brand} ${model}\n`;
+      msg += `• Storage & Color: ${storage} | ${color || 'N/A'}\n`;
+      msg += `• Battery Health: ${batteryHealth}\n`;
+      msg += `• Screen Condition: ${screenCondition}\n`;
+      msg += `• Body Condition: ${bodyCondition}\n`;
+      msg += `• Biometrics (Face ID/Fingerprint): ${faceIdStatus}\n`;
+      if (faults) msg += `• Faults/Notes: ${faults}\n`;
+      if (askingPrice) msg += `• Asking Price: ₦${Number(askingPrice).toLocaleString()}\n`;
+      if (targetSwapPhone) msg += `-------------------------------\n*DESIRED SWAP UPGRADE:* ${targetSwapPhone}\n`;
+      msg += `-------------------------------\n`;
+      msg += `Hello Goodluck Tech Service, please provide a valuation quote for my phone!`;
+
+      window.open(`https://wa.me/2349012544042?text=${encodeURIComponent(msg)}`, '_blank');
     }
   };
 
