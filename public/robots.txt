@@ -1,0 +1,6 @@
+# Goodluck Tech Service - Robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://goodlucktech.ng/sitemap.xml
